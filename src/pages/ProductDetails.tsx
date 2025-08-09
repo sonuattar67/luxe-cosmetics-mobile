@@ -7,8 +7,9 @@ import { RatingStars } from "@/components/RatingStars";
 import { useToast } from "@/hooks/use-toast";
 
 const fetchProduct = async (id: string) => {
-  const res = await fetch(`https://dummyjson.com/products/${id}`);
-  return res.json();
+  const res = await fetch("/data/products.json");
+  const data = await res.json();
+  return (data.products as any[]).find((p) => String(p.id) === String(id));
 };
 
 const ProductDetails = () => {
@@ -50,8 +51,16 @@ const ProductDetails = () => {
 
             <section className="space-y-2 pt-4">
               <h2 className="font-semibold">Reviews</h2>
-              <div className="rounded-lg border p-3 text-sm text-muted-foreground">
-                "Absolutely love the texture and finish. Feels premium!" – Alex
+              <div className="space-y-2">
+                {data.reviews?.slice(0,3).map((r: any, idx: number) => (
+                  <div key={idx} className="rounded-lg border p-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{r.reviewerName}</span>
+                      <RatingStars rating={r.rating} />
+                    </div>
+                    <p className="text-muted-foreground mt-1">{r.comment}</p>
+                  </div>
+                ))}
               </div>
             </section>
 
@@ -59,7 +68,7 @@ const ProductDetails = () => {
           </article>
         )}
       </main>
-      <div className="fixed inset-x-0 bottom-0 border-t bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="fixed inset-x-0 bottom-0 border-t bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto max-w-md p-4">
           <Button variant="hero" className="w-full" onClick={() => toast({ title: "Added to bag", description: "We saved this item for checkout." })}>
             Add to Bag

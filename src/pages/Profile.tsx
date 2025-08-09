@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import BottomNav from "@/components/BottomNav";
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -36,6 +37,7 @@ const Profile = () => {
 
         <Button variant="outline" className="w-full" onClick={logout}>Logout</Button>
       </main>
+      <BottomNav />
     </div>
   );
 };

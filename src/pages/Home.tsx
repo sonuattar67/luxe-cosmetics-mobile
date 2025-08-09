@@ -3,20 +3,38 @@ import { useQuery } from "@tanstack/react-query";
 import ProductCard, { Product } from "@/components/ProductCard";
 import Header from "@/components/Header";
 import { Search, SlidersHorizontal } from "lucide-react";
+import BottomNav from "@/components/BottomNav";
 
 const fetchProducts = async (): Promise<Product[]> => {
-  const res = await fetch("https://dummyjson.com/products/category/beauty?limit=50");
-  const data = await res.json();
-  return data.products.map((p: any) => ({
-    id: p.id,
-    title: p.title,
-    price: p.price,
-    rating: p.rating,
-    thumbnail: p.thumbnail,
-    description: p.description,
-    brand: p.brand,
-    category: p.category,
-  }));
+  try {
+    const res = await fetch("/data/products.json");
+    const data = await res.json();
+    return (data.products as any[])
+      .filter((p) => ["beauty", "fragrances"].includes(p.category))
+      .map((p) => ({
+        id: p.id,
+        title: p.title,
+        price: p.price,
+        rating: p.rating,
+        thumbnail: p.thumbnail,
+        description: p.description,
+        brand: p.brand,
+        category: p.category,
+      }));
+  } catch {
+    const res = await fetch("https://dummyjson.com/products/category/beauty?limit=50");
+    const data = await res.json();
+    return data.products.map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      rating: p.rating,
+      thumbnail: p.thumbnail,
+      description: p.description,
+      brand: p.brand,
+      category: p.category,
+    }));
+  }
 };
 
 const Home = () => {
@@ -52,13 +70,21 @@ const Home = () => {
           </button>
         </div>
 
-        <section aria-label="Products" className="grid grid-cols-1 gap-4">
+        <section className="mb-3">
+          <div className="flex items-baseline justify-between mb-2">
+            <h2 className="text-lg font-semibold">Best Products</h2>
+            <span className="text-xs text-muted-foreground">{filtered.length} products</span>
+          </div>
+        </section>
+
+        <section aria-label="Products" className="grid grid-cols-2 gap-4 pb-16">
           {isLoading && (
             <p className="text-sm text-muted-foreground">Loading products…</p>
           )}
           {!isLoading && filtered.map((p) => <ProductCard key={p.id} product={p} />)}
         </section>
       </main>
+      <BottomNav />
     </div>
   );
 };

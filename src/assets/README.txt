@@ -1,0 +1,1 @@
+This folder contains generated assets for GlowCart (logo and hero images).
